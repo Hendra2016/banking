@@ -4,7 +4,7 @@ server:
 spring:
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/riskdb
+    url: jdbc:postgresql://postgres:5432/riskdb
     username: postgres
     password: postgres
 
@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
 
     consumer:
       group-id: risk-service

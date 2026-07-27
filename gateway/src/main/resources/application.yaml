@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: gateway-service
-    
+
   cloud:
     gateway:
       server:
@@ -12,27 +12,27 @@ spring:
           routes:
 
             - id: customer-service
-              uri: http://localhost:8081
+              uri: http://customer-service:8081
               predicates:
                 - Path=/customers/**
 
             - id: loan-service
-              uri: http://localhost:8082
+              uri: http://loan-service:8082
               predicates:
                 - Path=/loans/**
 
             - id: slik-service
-              uri: http://localhost:8083
+              uri: http://slik-service:8083
               predicates:
                 - Path=/slik/**
 
             - id: risk-service
-              uri: http://localhost:8084
+              uri: http://risk-service:8084
               predicates:
                 - Path=/risk/**
 
             - id: notification-service
-              uri: http://localhost:8085
+              uri: http://notification-service:8085
               predicates:
                 - Path=/notifications/**
 

@@ -23,31 +23,44 @@ public class SlikIntegrationService {
             name = "slik",
             fallbackMethod = "fallback"
     )
-    public Mono<SlikResponse> inquiry(String applicationId,
+//    public Mono<SlikResponse> inquiry(String applicationId,
+//                                      SlikRequest request) {
+//
+//        return slikWebClient
+//                .post()
+//                .uri("/inquiry")
+//                .bodyValue(request)
+//                .retrieve()
+//                .bodyToMono(SlikResponse.class)
+//
+//                .doOnSuccess(response ->
+//                        auditService.log(
+//                                applicationId,
+//                                request,
+//                                response,
+//                                "SUCCESS"
+//                        ))
+//
+//                .doOnError(error ->
+//                        auditService.log(
+//                                applicationId,
+//                                request,
+//                                error.getMessage(),
+//                                "FAILED"
+//                        ));
+//    }
+//TO-DO hardcoded first, later will be dynamic
+    public Mono<SlikResponse> inquiry(
+            String applicationId,
             SlikRequest request) {
 
-        return slikWebClient
-                .post()
-                .uri("/inquiry")
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(SlikResponse.class)
-
-                .doOnSuccess(response ->
-                        auditService.log(
-                                applicationId,
-                                request,
-                                response,
-                                "SUCCESS"
-                        ))
-
-                .doOnError(error ->
-                        auditService.log(
-                                applicationId,
-                                request,
-                                error.getMessage(),
-                                "FAILED"
-                        ));
+        return Mono.just(
+                new SlikResponse(
+                        "GOOD",
+                        1,
+                        0
+                )
+        );
     }
 
     private Mono<SlikResponse> fallback(

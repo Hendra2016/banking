@@ -1,46 +1,46 @@
-package com.bank.slik.kafka;
+package com.bank.loan.kafka;
 
-import com.bank.slik.dto.SlikRequest;
-import com.bank.slik.event.LoanSubmittedEvent;
-import com.bank.slik.event.SlikCompletedEvent;
-import com.bank.slik.service.SlikIntegrationService;
+
+import com.bank.loan.entity.ApplicationStatus;
+import com.bank.loan.entity.Loan;
+import com.bank.loan.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import com.bank.loan.event.ScoringCompletedEvent;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor
-public class LoanSubmittedConsumer {
+public class ScoringCompletedConsumer {
 
-    private final SlikIntegrationService service;
-    private final SlikCompletedProducer producer;
+    private final LoanRepository repository;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(
-            topics = "loan-submitted",
-            groupId = "slik-service"
+            topics = "scoring-completed",
+            groupId = "loan-service"
     )
     public void consume(
-            LoanSubmittedEvent event) {
+            String payload) {
+        ScoringCompletedEvent event = objectMapper.readValue(
+                payload,
+                ScoringCompletedEvent.class
+        );
+        Loan loan = repository
+                .findById(event.applicationId())
+                .orElseThrow();
 
-        service.inquiry(
-                event.applicationId(),
-                new SlikRequest(
-                        event.nik(),
-                        event.customerName()
+        loan.setStatus(
+
+                "APPROVED".equals(
+                        event.decision()
                 )
-        ).subscribe(response -> {
+                        ? ApplicationStatus.APPROVED
+                        : ApplicationStatus.REJECTED
 
-            producer.publish(
-                    new SlikCompletedEvent(
-                            event.applicationId(),
-                            event.customerId(),
-                            response.result(),
-                            response.collectibility(),
-                            response.activeLoans(),
-                            "SLIK_COMPLETED"
-                    )
-            );
+        );
 
-        });
+        repository.save(loan);
     }
 }

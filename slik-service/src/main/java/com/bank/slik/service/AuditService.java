@@ -2,7 +2,7 @@ package com.bank.slik.service;
 
 import com.bank.slik.entity.AuditLog;
 import com.bank.slik.repository.AuditRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

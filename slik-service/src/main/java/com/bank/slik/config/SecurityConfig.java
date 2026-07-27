@@ -2,31 +2,30 @@ package com.bank.slik.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(
-            HttpSecurity http)
-            throws Exception {
+    SecurityWebFilterChain securityWebFilterChain(
+            ServerHttpSecurity http) {
 
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchange -> exchange
 
-                        .requestMatchers(
+                        .pathMatchers(
                                 "/actuator/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         )
                         .permitAll()
 
-                        .anyRequest()
+                        .anyExchange()
                         .authenticated()
                 );
 

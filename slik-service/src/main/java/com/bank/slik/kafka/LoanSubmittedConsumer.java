@@ -1,8 +1,10 @@
 package com.bank.slik.kafka;
 
+import com.bank.slik.dto.CustomerResponse;
 import com.bank.slik.dto.SlikRequest;
 import com.bank.slik.event.LoanSubmittedEvent;
 import com.bank.slik.event.SlikCompletedEvent;
+import com.bank.slik.service.CustomerClient;
 import com.bank.slik.service.SlikIntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,6 +18,7 @@ public class LoanSubmittedConsumer {
     private final SlikIntegrationService service;
     private final SlikCompletedProducer producer;
     private final ObjectMapper objectMapper;
+    private final CustomerClient customerClient;
 
     @KafkaListener(
             topics = "loan-submitted",
@@ -26,13 +29,16 @@ public class LoanSubmittedConsumer {
         LoanSubmittedEvent event =
                 objectMapper.readValue(
                         payload,
-                        LoanSubmittedEvent.class
-                );
+                        LoanSubmittedEvent.class);
+
+        CustomerResponse customer =
+                customerClient.getCustomer(Long.valueOf(event.customerId()));
+
         service.inquiry(
                 event.applicationId(),
                 new SlikRequest(
-                        event.nik(),
-                        event.customerName()
+                        customer.getNik(),
+                        customer.getName()
                 )
         ).subscribe(response -> {
             producer.publish(
@@ -45,7 +51,6 @@ public class LoanSubmittedConsumer {
                             "SLIK_COMPLETED"
                     )
             );
-
         });
     }
 }

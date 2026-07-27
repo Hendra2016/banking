@@ -3,6 +3,9 @@ server:
 
 slik:
   base-url: https://external-slik-api.com
+customer:
+  service:
+    url: http://localhost:8081
 
 spring:
 

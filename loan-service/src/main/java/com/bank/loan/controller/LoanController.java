@@ -30,4 +30,11 @@ public class LoanController {
 
         return service.findById(id);
     }
+
+    @PostMapping("/{id}/submit")
+    public Loan submit(
+            @PathVariable Long id) {
+
+        return service.submit(id);
+    }
 }

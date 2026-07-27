@@ -23,7 +23,7 @@ public class ScoringCompletedConsumer {
             ScoringCompletedEvent event) {
 
         Loan loan = repository
-                .findById(event.applicationId())
+                .findById(Long.parseLong(event.applicationId()))
                 .orElseThrow();
 
         loan.setStatus(

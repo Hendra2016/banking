@@ -19,7 +19,7 @@ spring:
             - id: loan-service
               uri: http://loan-service:8082
               predicates:
-                - Path=/loans/**
+                - Path=/applications/**
 
             - id: slik-service
               uri: http://slik-service:8083

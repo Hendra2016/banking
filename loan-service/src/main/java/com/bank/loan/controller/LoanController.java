@@ -26,14 +26,14 @@ public class LoanController {
 
     @GetMapping("/{id}")
     public Loan get(
-            @PathVariable Long id) {
+            @PathVariable String id) {
 
         return service.findById(id);
     }
 
     @PostMapping("/{id}/submit")
     public Loan submit(
-            @PathVariable Long id) {
+            @PathVariable String id) {
 
         return service.submit(id);
     }

@@ -30,7 +30,7 @@ public class LoanService {
         return repository.save(application);
     }
 
-    public Loan findById(Long id) {
+    public Loan findById(String id) {
 
         return
                 repository.findById(id)
@@ -40,7 +40,7 @@ public class LoanService {
     }
 
     @Transactional
-    public Loan submit(Long id) {
+    public Loan submit(String id) {
 
         Loan loan = repository.findById(id)
                 .orElseThrow(

@@ -7,18 +7,17 @@ spring:
 
   cloud:
     gateway:
-      routes:
-
-        - id: customer-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/customers/**
-
+      server:
+        webflux:
+          routes:
+            - id: customer-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/customers/**
 
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-
 
 management:
   endpoints:

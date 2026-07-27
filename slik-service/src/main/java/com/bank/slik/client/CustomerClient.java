@@ -1,4 +1,4 @@
-package com.bank.slik.service;
+package com.bank.slik.client;
 
 import com.bank.slik.dto.CustomerResponse;
 import org.springframework.beans.factory.annotation.Qualifier;

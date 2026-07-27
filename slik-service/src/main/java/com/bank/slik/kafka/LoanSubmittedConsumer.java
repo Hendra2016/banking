@@ -4,7 +4,7 @@ import com.bank.slik.dto.CustomerResponse;
 import com.bank.slik.dto.SlikRequest;
 import com.bank.slik.event.LoanSubmittedEvent;
 import com.bank.slik.event.SlikCompletedEvent;
-import com.bank.slik.service.CustomerClient;
+import com.bank.slik.client.CustomerClient;
 import com.bank.slik.service.SlikIntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;

@@ -1,4 +1,4 @@
-package com.bank.slik.config;
+package com.bank.notification.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,21 +15,7 @@ public class WebClientConfig {
         return WebClient.builder();
     }
 
-    @Value("${slik.base-url}")    private String slikUrl;
     @Value("${customer.service.url}")    private String customerUrl;
-
-    @Bean
-    public WebClient slikWebClient(
-            WebClient.Builder builder) {
-
-        return builder
-                .baseUrl(slikUrl)
-                .defaultHeader(
-                        HttpHeaders.CONTENT_TYPE,
-                        MediaType.APPLICATION_JSON_VALUE
-                )
-                .build();
-    }
 
     @Bean
     public WebClient customerWebClient(

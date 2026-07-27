@@ -6,7 +6,19 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "audit_log")
+@Table(
+        name = "audit_log",
+        indexes = {
+                @Index(
+                        name = "idx_application_id",
+                        columnList = "applicationId"
+                ),
+                @Index(
+                        name = "idx_created_date",
+                        columnList = "createdDate"
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

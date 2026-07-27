@@ -1,4 +1,4 @@
-package com.bank.slik.exception;
+package com.bank.risk.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

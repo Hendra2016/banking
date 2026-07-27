@@ -8,20 +8,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import com.bank.loan.event.ScoringCompletedEvent;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor
 public class ScoringCompletedConsumer {
 
     private final LoanRepository repository;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(
             topics = "scoring-completed",
             groupId = "loan-service"
     )
     public void consume(
-            ScoringCompletedEvent event) {
-
+            String payload) {
+        ScoringCompletedEvent event = objectMapper.readValue(
+                payload,
+                ScoringCompletedEvent.class
+        );
         Loan loan = repository
                 .findById(event.applicationId())
                 .orElseThrow();

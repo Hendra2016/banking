@@ -1,46 +1,51 @@
-package com.bank.loan.kafka;
+package com.bank.slik.kafka;
 
-
-import com.bank.loan.entity.ApplicationStatus;
-import com.bank.loan.entity.Loan;
-import com.bank.loan.repository.LoanRepository;
+import com.bank.slik.dto.SlikRequest;
+import com.bank.slik.event.LoanSubmittedEvent;
+import com.bank.slik.event.SlikCompletedEvent;
+import com.bank.slik.service.SlikIntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import com.bank.loan.event.ScoringCompletedEvent;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor
-public class ScoringCompletedConsumer {
+public class LoanSubmittedConsumer {
 
-    private final LoanRepository repository;
+    private final SlikIntegrationService service;
+    private final SlikCompletedProducer producer;
     private final ObjectMapper objectMapper;
 
     @KafkaListener(
-            topics = "scoring-completed",
-            groupId = "loan-service"
+            topics = "loan-submitted",
+            groupId = "slik-service"
     )
     public void consume(
             String payload) {
-        ScoringCompletedEvent event = objectMapper.readValue(
-                payload,
-                ScoringCompletedEvent.class
-        );
-        Loan loan = repository
-                .findById(event.applicationId())
-                .orElseThrow();
-
-        loan.setStatus(
-
-                "APPROVED".equals(
-                        event.decision()
+        LoanSubmittedEvent event =
+                objectMapper.readValue(
+                        payload,
+                        LoanSubmittedEvent.class
+                );
+        service.inquiry(
+                event.applicationId(),
+                new SlikRequest(
+                        event.nik(),
+                        event.customerName()
                 )
-                        ? ApplicationStatus.APPROVED
-                        : ApplicationStatus.REJECTED
+        ).subscribe(response -> {
+            producer.publish(
+                    new SlikCompletedEvent(
+                            event.applicationId(),
+                            event.customerId(),
+                            response.result(),
+                            response.collectibility(),
+                            response.activeLoans(),
+                            "SLIK_COMPLETED"
+                    )
+            );
 
-        );
-
-        repository.save(loan);
+        });
     }
 }

@@ -1,15 +1,17 @@
 services:
 
   postgres:
-    image: postgres
+    image: postgres:16
     container_name: postgres
 
     environment:
+      POSTGRES_DB: banking
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
     ports:
       - "5432:5432"
+
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -25,7 +27,7 @@ services:
       KAFKA_PROCESS_ROLES: broker,controller
 
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
 
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
@@ -35,3 +37,83 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  customer-service:
+    build:
+      context: ./customer-service
+
+    container_name: customer-service
+
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      - postgres
+      - kafka
+
+  loan-service:
+    build:
+      context: ./loan-service
+
+    container_name: loan-service
+
+    ports:
+      - "8082:8082"
+
+    depends_on:
+      - postgres
+      - kafka
+
+  slik-service:
+    build:
+      context: ./slik-service
+
+    container_name: slik-service
+
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      - kafka
+      - customer-service
+
+  risk-service:
+    build:
+      context: ./risk-service
+
+    container_name: risk-service
+
+    ports:
+      - "8084:8084"
+
+    depends_on:
+      - kafka
+
+  notification-service:
+    build:
+      context: ./notification-service
+
+    container_name: notification-service
+
+    ports:
+      - "8085:8085"
+
+    depends_on:
+      - kafka
+      - customer-service
+
+  gateway-service:
+    build:
+      context: ./gateway
+
+    container_name: gateway-service
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - customer-service
+      - loan-service
+      - slik-service
+      - risk-service
+      - notification-service

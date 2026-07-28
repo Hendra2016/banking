@@ -61,6 +61,9 @@ services:
       context: ./loan-service
 
     container_name: loan-service
+    environment:
+      OTEL_SERVICE_NAME: loan-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
 
     ports:
       - "8082:8082"
@@ -68,12 +71,17 @@ services:
     depends_on:
       - postgres
       - kafka
+      - otel-collector
 
   slik-service:
     build:
       context: ./slik-service
 
     container_name: slik-service
+    environment:
+      OTEL_SERVICE_NAME: slik-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8083:8083"
@@ -81,24 +89,34 @@ services:
     depends_on:
       - kafka
       - customer-service
+      - otel-collector
 
   risk-service:
     build:
       context: ./risk-service
 
     container_name: risk-service
+    environment:
+      OTEL_SERVICE_NAME: risk-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8084:8084"
 
     depends_on:
       - kafka
+      - otel-collector
 
   notification-service:
     build:
       context: ./notification-service
 
     container_name: notification-service
+    environment:
+      OTEL_SERVICE_NAME: notification-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8085:8085"
@@ -106,12 +124,17 @@ services:
     depends_on:
       - kafka
       - customer-service
+      - otel-collector
 
   gateway-service:
     build:
       context: ./gateway
 
     container_name: gateway-service
+    environment:
+      OTEL_SERVICE_NAME: gateway-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8080:8080"
@@ -122,6 +145,7 @@ services:
       - slik-service
       - risk-service
       - notification-service
+      - otel-collector
 
   prometheus:
     image: prom/prometheus

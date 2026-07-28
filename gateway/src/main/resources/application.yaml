@@ -14,27 +14,27 @@ spring:
             - id: customer-service
               uri: http://customer-service:8081
               predicates:
-                - Path=/customers/**
+                - Path=/customers**
 
             - id: loan-service
               uri: http://loan-service:8082
               predicates:
-                - Path=/applications/**
+                - Path=/applications**
 
             - id: slik-service
               uri: http://slik-service:8083
               predicates:
-                - Path=/slik/**
+                - Path=/slik**
 
             - id: risk-service
               uri: http://risk-service:8084
               predicates:
-                - Path=/risk/**
+                - Path=/risk**
 
             - id: notification-service
               uri: http://notification-service:8085
               predicates:
-                - Path=/notifications/**
+                - Path=/notifications**
 
 logging:
   level:
@@ -44,4 +44,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: "*"

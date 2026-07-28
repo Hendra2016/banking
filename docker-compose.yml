@@ -44,12 +44,17 @@ services:
 
     container_name: customer-service
 
+    environment:
+      OTEL_SERVICE_NAME: customer-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
     ports:
       - "8081:8081"
 
     depends_on:
       - postgres
       - kafka
+      - otel-collector
 
   loan-service:
     build:
@@ -131,3 +136,28 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+
+    command:
+      - "--config=/etc/otelcol-contrib/config.yaml"
+
+    volumes:
+      - ./otel/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+
+    expose:
+      - "4317"
+      - "4318"
+
+    depends_on:
+      - jaeger

@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+
+  - job_name: customer-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - customer-service:8081
+
+  - job_name: loan-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - loan-service:8082
+
+  - job_name: slik-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - slik-service:8083
+
+  - job_name: risk-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - risk-service:8084
+
+  - job_name: notification-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - notification-service:8085

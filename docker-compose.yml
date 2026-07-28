@@ -44,18 +44,26 @@ services:
 
     container_name: customer-service
 
+    environment:
+      OTEL_SERVICE_NAME: customer-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
     ports:
       - "8081:8081"
 
     depends_on:
       - postgres
       - kafka
+      - otel-collector
 
   loan-service:
     build:
       context: ./loan-service
 
     container_name: loan-service
+    environment:
+      OTEL_SERVICE_NAME: loan-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
 
     ports:
       - "8082:8082"
@@ -63,12 +71,17 @@ services:
     depends_on:
       - postgres
       - kafka
+      - otel-collector
 
   slik-service:
     build:
       context: ./slik-service
 
     container_name: slik-service
+    environment:
+      OTEL_SERVICE_NAME: slik-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8083:8083"
@@ -76,24 +89,34 @@ services:
     depends_on:
       - kafka
       - customer-service
+      - otel-collector
 
   risk-service:
     build:
       context: ./risk-service
 
     container_name: risk-service
+    environment:
+      OTEL_SERVICE_NAME: risk-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8084:8084"
 
     depends_on:
       - kafka
+      - otel-collector
 
   notification-service:
     build:
       context: ./notification-service
 
     container_name: notification-service
+    environment:
+      OTEL_SERVICE_NAME: notification-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8085:8085"
@@ -101,12 +124,17 @@ services:
     depends_on:
       - kafka
       - customer-service
+      - otel-collector
 
   gateway-service:
     build:
       context: ./gateway
 
     container_name: gateway-service
+    environment:
+      OTEL_SERVICE_NAME: gateway-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
 
     ports:
       - "8080:8080"
@@ -117,3 +145,65 @@ services:
       - slik-service
       - risk-service
       - notification-service
+      - otel-collector
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+
+    command:
+      - "--config=/etc/otelcol-contrib/config.yaml"
+
+    volumes:
+      - ./otel/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+
+    expose:
+      - "4317"
+      - "4318"
+
+    depends_on:
+      - jaeger
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+
+    ports:
+      - "3100:3100"
+
+    command: -config.file=/etc/loki/local-config.yaml
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./loki/promtail-config.yml:/etc/promtail/config.yml
+
+    command: -config.file=/etc/promtail/config.yml
+
+    depends_on:
+      - loki

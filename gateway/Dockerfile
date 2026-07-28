@@ -1,7 +1,20 @@
-FROM eclipse-temurin:21-jdk
+# Build Stage
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY target/gateway-0.0.1-SNAPSHOT.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-ENTRYPOINT ["java","-jar","app.jar"]
+RUN mvn clean package -DskipTests
+
+# Runtime Stage
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+
+ENTRYPOINT ["java", "-javaagent:/app/opentelemetry-javaagent.jar", "-jar", "/app/app.jar"]

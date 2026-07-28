@@ -2,6 +2,8 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: customer-service
   datasource:
     url: jdbc:postgresql://postgres:5432/customerdb
     username: postgres
@@ -16,3 +18,28 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    io.opentelemetry: DEBUG
+    io.micrometer.tracing: DEBUG
+    io.opentelemetry.exporter.otlp: DEBUG

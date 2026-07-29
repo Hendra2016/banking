@@ -38,6 +38,24 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
+  auth-service:
+    build:
+      context: ./auth-service
+
+    container_name: auth-service
+
+    ports:
+      - "8086:8086"
+
+    environment:
+      OTEL_SERVICE_NAME: auth-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+
+    depends_on:
+      - postgres
+      - kafka
+      - otel-collector
+
   customer-service:
     build:
       context: ./customer-service

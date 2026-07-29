@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -29,5 +26,13 @@ public class SlikController {
             @Valid @RequestBody SlikRequest request) {
 
         return service.inquiry(UUID.randomUUID().toString(),request);
+    }
+
+    @Operation(summary = "Check SLIK Information")
+    @PostMapping("/mockup")
+    public Mono<SlikResponse> mock(
+            @Valid @RequestBody SlikRequest request, @RequestParam("applicationId") String applicationId) {
+
+        return service.mockup(applicationId,request);
     }
 }

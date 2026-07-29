@@ -2,7 +2,7 @@ server:
   port: 8083
 
 slik:
-  base-url: https://external-slik-api.com
+  base-url: http://slik-service:8083
 customer:
   service:
     url: http://customer-service:8081

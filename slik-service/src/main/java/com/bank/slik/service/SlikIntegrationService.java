@@ -23,37 +23,36 @@ public class SlikIntegrationService {
             name = "slik",
             fallbackMethod = "fallback"
     )
-//    public Mono<SlikResponse> inquiry(String applicationId,
-//                                      SlikRequest request) {
-//
-//        return slikWebClient
-//                .post()
-//                .uri("/inquiry")
-//                .bodyValue(request)
-//                .retrieve()
-//                .bodyToMono(SlikResponse.class)
-//
-//                .doOnSuccess(response ->
-//                        auditService.log(
-//                                applicationId,
-//                                request,
-//                                response,
-//                                "SUCCESS"
-//                        ))
-//
-//                .doOnError(error ->
-//                        auditService.log(
-//                                applicationId,
-//                                request,
-//                                error.getMessage(),
-//                                "FAILED"
-//                        ));
-//    }
-//TO-DO hardcoded first, later will be dynamic
-    public Mono<SlikResponse> inquiry(
+    public Mono<SlikResponse> inquiry(String applicationId,
+                                      SlikRequest request) {
+
+        return slikWebClient
+                .post()
+                .uri("/mockup?applicationId={applicationId}", applicationId)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(SlikResponse.class)
+
+                .doOnSuccess(response ->
+                        auditService.log(
+                                applicationId,
+                                request,
+                                response,
+                                "SUCCESS"
+                        ))
+
+                .doOnError(error ->
+                        auditService.log(
+                                applicationId,
+                                request,
+                                error.getMessage(),
+                                "FAILED"
+                        ));
+    }
+
+    public Mono<SlikResponse> mockup(
             String applicationId,
             SlikRequest request) {
-
         return Mono.just(
                 new SlikResponse(
                         "GOOD",

@@ -1,7 +1,7 @@
 package com.bank.notification.consumer;
 
 
-import com.bank.notification.event.ScoringCompletedEvent;
+import com.bank.common.event.dto.ScoringCompletedEvent;
 import com.bank.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

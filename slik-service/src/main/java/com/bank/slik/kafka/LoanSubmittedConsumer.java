@@ -1,10 +1,9 @@
 package com.bank.slik.kafka;
 
+import com.bank.common.event.dto.LoanSubmittedEvent;
+import com.bank.slik.client.CustomerClient;
 import com.bank.slik.dto.CustomerResponse;
 import com.bank.slik.dto.SlikRequest;
-import com.bank.slik.event.LoanSubmittedEvent;
-import com.bank.slik.event.SlikCompletedEvent;
-import com.bank.slik.client.CustomerClient;
 import com.bank.slik.service.SlikIntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,7 +15,6 @@ import tools.jackson.databind.ObjectMapper;
 public class LoanSubmittedConsumer {
 
     private final SlikIntegrationService service;
-    private final SlikCompletedProducer producer;
     private final ObjectMapper objectMapper;
     private final CustomerClient customerClient;
 
@@ -40,17 +38,6 @@ public class LoanSubmittedConsumer {
                         customer.getNik(),
                         customer.getName()
                 )
-        ).subscribe(response -> {
-            producer.publish(
-                    new SlikCompletedEvent(
-                            event.applicationId(),
-                            event.customerId(),
-                            response.result(),
-                            response.collectibility(),
-                            response.activeLoans(),
-                            "SLIK_COMPLETED"
-                    )
-            );
-        });
+        ).subscribe();
     }
 }

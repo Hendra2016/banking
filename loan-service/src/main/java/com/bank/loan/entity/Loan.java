@@ -1,5 +1,6 @@
 package com.bank.loan.entity;
 
+import com.bank.common.event.dto.ApplicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

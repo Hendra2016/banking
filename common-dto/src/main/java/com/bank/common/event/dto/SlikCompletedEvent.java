@@ -1,4 +1,4 @@
-package com.bank.slik.event;
+package com.bank.common.event.dto;
 
 public record SlikCompletedEvent(
         String applicationId,

@@ -1,4 +1,4 @@
-package com.bank.loan.event;
+package com.bank.common.event.dto;
 
 public record ScoringCompletedEvent(
         String applicationId,

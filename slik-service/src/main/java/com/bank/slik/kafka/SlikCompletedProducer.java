@@ -1,6 +1,7 @@
 package com.bank.slik.kafka;
 
-import com.bank.slik.event.SlikCompletedEvent;
+import com.bank.common.event.dto.ApplicationStatusEvent;
+import com.bank.common.event.dto.SlikCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,13 @@ public class SlikCompletedProducer {
         kafkaTemplate.send(
                 "slik-completed",
                 event.applicationId(),
+                event
+        );
+    }
+
+    public void failed(ApplicationStatusEvent event) {
+        kafkaTemplate.send(
+                "failed-process",
                 event
         );
     }

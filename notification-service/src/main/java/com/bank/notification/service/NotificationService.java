@@ -1,8 +1,8 @@
 package com.bank.notification.service;
 
+import com.bank.common.event.dto.ScoringCompletedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.bank.notification.event.ScoringCompletedEvent;
 
 import java.util.List;
 
@@ -29,13 +29,13 @@ public class NotificationService {
                 =================================================
                 """,
                 event.applicationId(),
-                event.customerId(),
+                event.event(),
                 event.score(),
                 event.decision()
         );
         channels.forEach(channel -> channel.send(
                 event.applicationId(),
-                event.customerId()
+                event.decision()
         ));
     }
 }

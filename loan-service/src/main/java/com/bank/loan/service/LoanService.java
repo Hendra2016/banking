@@ -1,9 +1,9 @@
 package com.bank.loan.service;
 
+import com.bank.common.event.dto.ApplicationStatus;
+import com.bank.common.event.dto.LoanSubmittedEvent;
 import com.bank.loan.dto.CreateApplicationRequest;
-import com.bank.loan.entity.ApplicationStatus;
 import com.bank.loan.entity.Loan;
-import com.bank.loan.event.LoanSubmittedEvent;
 import com.bank.loan.kafka.LoanSubmittedProducer;
 import com.bank.loan.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,10 @@ public class LoanService {
     private final LoanRepository repository;
     private final LoanSubmittedProducer producer;
 
-    public Loan create(
-            CreateApplicationRequest request) {
+    public Loan create(String customerId,CreateApplicationRequest request) {
 
         Loan application = Loan.builder()
-                .customerId(request.customerId())
+                .customerId(customerId)
                 .amount(request.amount().doubleValue())
                 .tenure(request.tenure())
                 .status(ApplicationStatus.DRAFT)
@@ -37,6 +36,11 @@ public class LoanService {
                         .orElseThrow(
                                 () -> new RuntimeException(
                                         "Customer not found"));
+    }
+
+    @Transactional
+    public void updateLoan(String applicationId, ApplicationStatus status) {
+        repository.updateStatus(applicationId, status);
     }
 
     @Transactional
@@ -56,6 +60,8 @@ public class LoanService {
                 new LoanSubmittedEvent(
                         loan.getApplicationId().toString(),
                         loan.getCustomerId(),
+                        "",
+                        "",
                         "LOAN_SUBMITTED"
                 )
         );

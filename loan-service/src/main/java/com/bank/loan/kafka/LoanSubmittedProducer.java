@@ -1,6 +1,6 @@
 package com.bank.loan.kafka;
 
-import com.bank.loan.event.LoanSubmittedEvent;
+import com.bank.common.event.dto.LoanSubmittedEvent;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 import org.springframework.kafka.core.KafkaTemplate;

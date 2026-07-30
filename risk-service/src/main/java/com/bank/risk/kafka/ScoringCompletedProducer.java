@@ -1,6 +1,7 @@
 package com.bank.risk.kafka;
 
-import com.bank.risk.event.ScoringCompletedEvent;
+import com.bank.common.event.dto.ApplicationStatusEvent;
+import com.bank.common.event.dto.ScoringCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,16 @@ public class ScoringCompletedProducer {
 
     public void publish(
             ScoringCompletedEvent event) {
-
         kafkaTemplate.send(
                 "scoring-completed",
                 event.applicationId(),
+                event
+        );
+    }
+
+    public void failed(ApplicationStatusEvent event) {
+        kafkaTemplate.send(
+                "failed-process",
                 event
         );
     }

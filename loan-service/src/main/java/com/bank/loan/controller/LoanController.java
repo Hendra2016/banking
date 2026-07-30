@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/applications")
@@ -19,9 +20,20 @@ public class LoanController {
     @ResponseStatus(HttpStatus.CREATED)
     public Loan create(
             @Valid @RequestBody
-            CreateApplicationRequest request) {
+            CreateApplicationRequest request,
+            @RequestHeader("X-USER")
+            String username,
+            @RequestHeader("X-ROLE")
+            String role) {
 
-        return service.create(request);
+        if (!"CUSTOMER".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN);
+        }
+
+        return service.create(
+                username,
+                request);
     }
 
     @GetMapping("/{id}")
@@ -33,8 +45,13 @@ public class LoanController {
 
     @PostMapping("/{id}/submit")
     public Loan submit(
-            @PathVariable String id) {
-
+            @PathVariable String id,
+            @RequestHeader("X-ROLE")
+            String role) {
+        if (!"CUSTOMER".equals(role)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN);
+        }
         return service.submit(id);
     }
 }

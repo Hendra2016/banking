@@ -1,13 +1,12 @@
 package com.bank.loan.kafka;
 
-
-import com.bank.loan.entity.ApplicationStatus;
+import com.bank.common.event.dto.ApplicationStatus;
+import com.bank.common.event.dto.ScoringCompletedEvent;
 import com.bank.loan.entity.Loan;
 import com.bank.loan.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import com.bank.loan.event.ScoringCompletedEvent;
 import tools.jackson.databind.ObjectMapper;
 
 @Component

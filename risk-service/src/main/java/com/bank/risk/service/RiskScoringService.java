@@ -1,7 +1,11 @@
 package com.bank.risk.service;
 
+import com.bank.common.event.dto.ApplicationStatus;
+import com.bank.common.event.dto.ApplicationStatusEvent;
+import com.bank.common.event.dto.ScoringCompletedEvent;
+import com.bank.common.event.dto.SlikCompletedEvent;
 import com.bank.risk.entity.RiskScore;
-import com.bank.risk.event.SlikCompletedEvent;
+import com.bank.risk.kafka.ScoringCompletedProducer;
 import com.bank.risk.repository.RiskScoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,8 +15,9 @@ import org.springframework.stereotype.Service;
 public class RiskScoringService {
 
     private final RiskScoreRepository repository;
+    private final ScoringCompletedProducer producer;
 
-    public RiskScore calculate(
+    public void calculate(
             SlikCompletedEvent event) {
 
         int score = 100;
@@ -24,20 +29,35 @@ public class RiskScoringService {
         if (event.activeLoans() > 3) {
             score -= 20;
         }
-
-        String decision =
-                score >= 70
-                        ? "APPROVED"
-                        : "REJECTED";
+        boolean isApproved = score >= 70;
 
         RiskScore riskScore =
                 RiskScore.builder()
                         .applicationId(
                                 event.applicationId())
                         .score(score)
-                        .decision(decision)
+                        .decision(isApproved ? "APPROVED" : "REJECTED")
                         .build();
 
-        return repository.save(riskScore);
+        riskScore =  repository.save(riskScore);
+        if(isApproved){
+            producer.publish(
+                    new ScoringCompletedEvent(
+                            riskScore.getApplicationId(),
+                            riskScore.getScore(),
+                            riskScore.getDecision(),
+                            "SCORING_COMPLETED"
+                    )
+            );
+        }else {
+            producer.failed(
+                    new ApplicationStatusEvent(
+                            event.applicationId(),
+                            "RISK",
+                            ApplicationStatus.REJECTED,
+                            "Risk scoring failed"
+                    )
+            );
+        }
     }
 }
